@@ -5,11 +5,14 @@ import 'package:splash_view/splash_view.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:suhum_naspa/constants/constant.dart';
+import 'package:suhum_naspa/screens/organiser_screen.dart';
 import 'package:suhum_naspa/screens/president_screen.dart';
 import 'package:suhum_naspa/screens/results_screen.dart';
+import 'package:suhum_naspa/screens/secretary_screen.dart';
 import 'package:suhum_naspa/screens/thankyou_screen.dart';
 import 'package:suhum_naspa/screens/veep_screen.dart';
 import 'package:suhum_naspa/screens/verification_screen.dart';
+import 'package:suhum_naspa/screens/wocom_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +45,7 @@ class MyApp extends StatelessWidget {
               fontSize: 20.sp,
               fontWeight: FontWeight.bold,
             ),
+            headline4: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.white),
             headline5: TextStyle(fontSize: 12.sp),
             headline6: TextStyle(fontSize: 10.sp),
             bodyText1: TextStyle(fontSize: 12.sp),
@@ -52,7 +56,7 @@ class MyApp extends StatelessWidget {
         home: SplashView(
           logo: Image.asset('images/logo.jpeg'),
           done: Done(
-            const VerificationScreen(),
+            const VerificationScreen(), // Home here
             animationDuration: const Duration(seconds: 2),
             curve: Curves.easeInOut,
           ),
@@ -79,6 +83,21 @@ class MyApp extends StatelessWidget {
               return PageTransition(
                 child: const VeepScreen(),
                 type: PageTransitionType.rightToLeft,
+              );
+            case secretaryScreen:
+              return PageTransition(
+                child: const SecretaryScreen(),
+                type: PageTransitionType.leftToRight,
+              );
+            case organiserScreen:
+              return PageTransition(
+                child: const OrganiserScreen(),
+                type: PageTransitionType.bottomToTop,
+              );
+            case wocomScreen:
+              return PageTransition(
+                child: const WocomScreen(),
+                type: PageTransitionType.fade,
               );
             case thankyouScreen:
               return PageTransition(

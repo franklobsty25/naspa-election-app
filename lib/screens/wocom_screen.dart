@@ -7,14 +7,14 @@ import 'package:suhum_naspa/constants/constant.dart';
 import 'package:suhum_naspa/models/single_candidate_model.dart';
 import 'package:suhum_naspa/services/candidate_service.dart';
 
-class VeepScreen extends StatefulWidget {
-  const VeepScreen({super.key});
+class WocomScreen extends StatefulWidget {
+  const WocomScreen({super.key});
 
   @override
-  State<VeepScreen> createState() => _VeepScreenState();
+  State<WocomScreen> createState() => _WocomScreenState();
 }
 
-class _VeepScreenState extends State<VeepScreen> {
+class _WocomScreenState extends State<WocomScreen> {
   bool loading = false;
   bool sLoading = false;
 
@@ -24,17 +24,17 @@ class _VeepScreenState extends State<VeepScreen> {
     });
 
     try {
-      final existingVotes = await CandidateService().fetchCandidateVotes('v_1');
+      final existingVotes = await CandidateService().fetchCandidateVotes('w_1');
 
-      final prez = SingleCandidateModel.fromFirestore(existingVotes.data());
-      ++prez.yesVotes;
+      final wocom = SingleCandidateModel.fromFirestore(existingVotes.data());
+      ++wocom.yesVotes;
 
       await CandidateService().countVoting(
-        'v_1',
-        prez.toFirestore(),
+        'w_1',
+        wocom.toFirestore(),
       );
 
-      Navigator.pushReplacementNamed(context, secretaryScreen);
+      Navigator.pushReplacementNamed(context, thankyouScreen);
 
       Timer(
         const Duration(seconds: 1),
@@ -53,17 +53,17 @@ class _VeepScreenState extends State<VeepScreen> {
     });
 
     try {
-      final existingVotes = await CandidateService().fetchCandidateVotes('v_1');
+      final existingVotes = await CandidateService().fetchCandidateVotes('w_1');
 
-      final prez = SingleCandidateModel.fromFirestore(existingVotes.data());
-      ++prez.noVotes;
+      final wocom2 = SingleCandidateModel.fromFirestore(existingVotes.data());
+      ++wocom2.noVotes;
 
       await CandidateService().countVoting(
-        'v_1',
-        prez.toFirestore(),
+        'w_1',
+        wocom2.toFirestore(),
       );
 
-      Navigator.pushReplacementNamed(context, secretaryScreen);
+      Navigator.pushReplacementNamed(context, thankyouScreen);
 
       Timer(
         const Duration(seconds: 1),
@@ -96,7 +96,7 @@ class _VeepScreenState extends State<VeepScreen> {
       appBar: AppBar(
         title: Center(
           child: Text(
-            'Vice Presidential Candidate',
+            'Women Commissioner Candidate',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline4,
           ),
@@ -104,27 +104,29 @@ class _VeepScreenState extends State<VeepScreen> {
       ),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 2.w,
-          vertical: 3.h,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 3.h),
         child: ListView(
           children: [
             candidateWidget(
               context,
-              'Phyllis Marfoa Ayeh',
-              'images/veep.jpeg',
+              'Rhoda Godsway Doklah',
+              'images/wocom.jpg',
               true,
             ),
             SizedBox(height: 20.h),
-            // candidateWidget(context, 'Henry Kondo', 'images/v_2.JPG', false),
+            // candidateWidget(
+            //   context,
+            //   'Agudze Elia Mawuli',
+            //   'images/p_2.JPG',
+            //   false,
+            // ),
             // SizedBox(height: 5.h),
             Align(
               alignment: Alignment.bottomCenter,
               child: TextButton(
                 onPressed: () => Navigator.pushReplacementNamed(
                   context,
-                  secretaryScreen,
+                  thankyouScreen,
                 ),
                 child: const Text('Skip'),
               ),
@@ -143,6 +145,7 @@ class _VeepScreenState extends State<VeepScreen> {
   ) {
     return Column(
       children: [
+        SizedBox(height: 1.h),
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: Card(
@@ -151,12 +154,12 @@ class _VeepScreenState extends State<VeepScreen> {
             child: Image.asset(candidateImage),
           ),
         ),
-        SizedBox(height: 1.h),
+        SizedBox(height: 2.h),
         Align(
           alignment: Alignment.topCenter,
           child: Text(candidateName),
         ),
-        SizedBox(height: 5.h),
+        SizedBox(height: 2.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -175,7 +178,7 @@ class _VeepScreenState extends State<VeepScreen> {
                         width: 5.w,
                         height: 3.h,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2.0,
+                          strokeWidth: 2,
                           color: Theme.of(context).colorScheme.secondary,
                         ),
                       )
@@ -198,7 +201,7 @@ class _VeepScreenState extends State<VeepScreen> {
                         width: 5.w,
                         height: 3.h,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2.0,
+                          strokeWidth: 2,
                           color: Theme.of(context).colorScheme.secondary,
                         ),
                       )

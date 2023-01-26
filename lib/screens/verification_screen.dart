@@ -20,8 +20,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
   late CountdownTimerController endController;
   late CountdownTimerController startController;
   final TextEditingController textController = TextEditingController();
-  int startTime = DateTime.parse('2023-01-26T11:00:00Z').millisecondsSinceEpoch;
-  int endTime = DateTime.parse('2023-01-26T15:00:00Z').millisecondsSinceEpoch;
+  int startTime = DateTime.parse('2023-01-27T09:30:00Z').millisecondsSinceEpoch;
+  int endTime = DateTime.parse('2023-01-27T12:00:00Z').millisecondsSinceEpoch;
   bool loading = false;
   bool startElection = false;
   bool electionStarted = true;
@@ -44,57 +44,62 @@ class _VerificationScreenState extends State<VerificationScreen> {
     setState(() {
       loading = true;
     });
+
     try {
       final documentsnapshot = await PersonnelService().getPersonnel(
         textController.text.trim().toUpperCase(),
       );
 
-      final personnel = PersonnelModel.fromFirestore(
-        documentsnapshot.data(),
-      );
-
-      GetStorage().write('name', personnel.name);
-
-      if (personnel.voted) {
-        showToast(
-          'Sorry, Nss number voted already.',
-          context: context,
-          animation: StyledToastAnimation.scale,
-          reverseAnimation: StyledToastAnimation.fade,
-          position: StyledToastPosition.bottom,
-          animDuration: const Duration(seconds: 1),
-          duration: const Duration(seconds: 4),
-          curve: Curves.elasticOut,
-          reverseCurve: Curves.linear,
-        );
-      } else {
-        await PersonnelService().countAsVoted(
-          textController.text.trim().toUpperCase(),
-          {"voted": true},
-        );
-
-        Navigator.pushReplacementNamed(context, presidentScreen);
-      }
-
-      Timer(
-        const Duration(seconds: 1),
-        () => (setState(() {
+      if (documentsnapshot.data() == null) {
+        setState(() {
           loading = false;
-        })),
-      );
+        });
+        showToastMessage('Nss Number not found');
+      } else {
+        final personnel = PersonnelModel.fromFirestore(
+          documentsnapshot.data(),
+        );
+
+        GetStorage().write('name', personnel.name);
+
+        if (personnel.voted) {
+          setState(() {
+            loading = false;
+          });
+          showToastMessage('Sorry, Nss number voted already.');
+        } else {
+          await PersonnelService().countAsVoted(
+            textController.text.trim().toUpperCase(),
+            {"voted": true},
+          );
+
+          Navigator.pushReplacementNamed(context, presidentScreen);
+        }
+
+        Timer(
+          const Duration(seconds: 1),
+          () => (setState(() {
+            loading = false;
+          })),
+        );
+      }
     } catch (e) {
-      showToast(
-        e.toString(),
-        context: context,
-        animation: StyledToastAnimation.scale,
-        reverseAnimation: StyledToastAnimation.fade,
-        position: StyledToastPosition.bottom,
-        animDuration: const Duration(seconds: 1),
-        duration: const Duration(seconds: 4),
-        curve: Curves.elasticOut,
-        reverseCurve: Curves.linear,
-      );
+      showToastMessage(e.toString());
     }
+  }
+
+  showToastMessage(String errorMessage) {
+    showToast(
+      errorMessage,
+      context: context,
+      animation: StyledToastAnimation.scale,
+      reverseAnimation: StyledToastAnimation.fade,
+      position: StyledToastPosition.bottom,
+      animDuration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 4),
+      curve: Curves.elasticOut,
+      reverseCurve: Curves.linear,
+    );
   }
 
   void _onStart() {
@@ -111,7 +116,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
       electionStarted = false;
       notice = 'Election has closed';
     });
-    // Navigator.pushNamed(context, resultsScreen);
   }
 
   @override
@@ -125,6 +129,14 @@ class _VerificationScreenState extends State<VerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Center(
+          child: Text(
+            'Verifcation',
+            style: Theme.of(context).textTheme.headline4,
+          ),
+        ),
+      ),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Padding(
         padding: EdgeInsets.symmetric(

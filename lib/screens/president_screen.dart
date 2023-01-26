@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:sizer/sizer.dart';
 import 'package:suhum_naspa/constants/constant.dart';
-import 'package:suhum_naspa/models/president_model.dart';
+import 'package:suhum_naspa/models/double_candidate_model.dart';
 import 'package:suhum_naspa/services/candidate_service.dart';
 
 class PresidentScreen extends StatefulWidget {
@@ -19,13 +19,14 @@ class _PresidentScreenState extends State<PresidentScreen> {
   bool sLoading = false;
 
   void onCandidateOneVoting(context) async {
-    setState(() {
-      loading = true;
-    });
+    // setState(() {
+    //   loading = true;
+    // });
+
     try {
       final existingVotes = await CandidateService().fetchCandidateVotes('p_1');
 
-      final prez = PresidentModel.fromFirestore(existingVotes.data());
+      final prez = DoubleCandidateModel.fromFirestore(existingVotes.data());
       ++prez.votes;
 
       await CandidateService().countVoting(
@@ -50,31 +51,17 @@ class _PresidentScreenState extends State<PresidentScreen> {
     setState(() {
       sLoading = true;
     });
+
     try {
       final existingVotes = await CandidateService().fetchCandidateVotes('p_2');
 
-      final prez2 = PresidentModel.fromFirestore(existingVotes.data());
+      final prez2 = DoubleCandidateModel.fromFirestore(existingVotes.data());
       ++prez2.votes;
 
-      if (prez2.votes >= 56) {
-        final existingVotes =
-            await CandidateService().fetchCandidateVotes('p_1');
-
-        final prez = PresidentModel.fromFirestore(existingVotes.data());
-        ++prez.votes;
-
-        await CandidateService().countVoting(
-          'p_1',
-          prez.toFirestore(),
-        );
-
-        Navigator.pushReplacementNamed(context, veepScreen);
-      } else {
         await CandidateService().countVoting(
           'p_2',
           prez2.toFirestore(),
         );
-      }
 
       Navigator.pushReplacementNamed(context, veepScreen);
 
@@ -106,6 +93,15 @@ class _PresidentScreenState extends State<PresidentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Center(
+          child: Text(
+            'Presidential Candidates',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headline4,
+          ),
+        ),
+      ),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -114,23 +110,17 @@ class _PresidentScreenState extends State<PresidentScreen> {
         ),
         child: ListView(
           children: [
-            Text(
-              'Presidential Candidates',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.subtitle2,
-            ),
-            SizedBox(height: 1.h),
             candidateWidget(
               context,
-              'Asare Kwame Danso',
-              'images/p_1.JPG',
+              'Farouk Domson',
+              'images/farouk.jpeg',
               true,
             ),
             SizedBox(height: 5.h),
             candidateWidget(
               context,
-              'Agudze Elia Mawuli',
-              'images/p_2.JPG',
+              'Okoampah John',
+              'images/john.jpeg',
               false,
             ),
             SizedBox(height: 5.h),
@@ -158,10 +148,6 @@ class _PresidentScreenState extends State<PresidentScreen> {
   ) {
     return Column(
       children: [
-        Align(
-          alignment: Alignment.topCenter,
-          child: Text(candidateName),
-        ),
         SizedBox(height: 1.h),
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
@@ -170,6 +156,11 @@ class _PresidentScreenState extends State<PresidentScreen> {
             shadowColor: Colors.black45,
             child: Image.asset(candidateImage, height: 20.h),
           ),
+        ),
+        SizedBox(height: 2.h),
+        Align(
+          alignment: Alignment.topCenter,
+          child: Text(candidateName),
         ),
         SizedBox(height: 2.h),
         SizedBox(

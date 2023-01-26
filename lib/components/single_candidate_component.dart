@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-class CandidateComponent extends StatelessWidget {
+class SingleCandidateComponent extends StatelessWidget {
   final String candidateName;
   final String candidatePosition;
   final String candidateImage;
-  final int candidateTotalVote;
-  const CandidateComponent({
+  final int candidateYesVote;
+  final int candidateNoVote;
+  const SingleCandidateComponent({
     super.key,
     required this.candidateName,
     required this.candidatePosition,
     required this.candidateImage,
-    required this.candidateTotalVote,
+    required this.candidateYesVote,
+    required this.candidateNoVote,
   });
 
   @override
@@ -37,7 +39,14 @@ class CandidateComponent extends StatelessWidget {
           style: Theme.of(context).textTheme.headline6,
         ),
         SizedBox(height: 2.h),
-        Text('Total votes: $candidateTotalVote'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Yes votes: $candidateYesVote'),
+            SizedBox(width: 5.w),
+            Text('No votes: $candidateNoVote'),
+          ],
+        ),
         SizedBox(height: 2.h),
       ],
     );

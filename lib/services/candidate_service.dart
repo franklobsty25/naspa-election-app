@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CandidateService {
   CollectionReference candidates =
-      FirebaseFirestore.instance.collection('candidates');
+      FirebaseFirestore.instance.collection('nsawam_candidates');
 
   Future fetchCandidateVotes(String candidate) async {
     try {

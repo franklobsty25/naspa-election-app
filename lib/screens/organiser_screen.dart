@@ -7,14 +7,14 @@ import 'package:suhum_naspa/constants/constant.dart';
 import 'package:suhum_naspa/models/single_candidate_model.dart';
 import 'package:suhum_naspa/services/candidate_service.dart';
 
-class VeepScreen extends StatefulWidget {
-  const VeepScreen({super.key});
+class OrganiserScreen extends StatefulWidget {
+  const OrganiserScreen({super.key});
 
   @override
-  State<VeepScreen> createState() => _VeepScreenState();
+  State<OrganiserScreen> createState() => _OrganiserScreenState();
 }
 
-class _VeepScreenState extends State<VeepScreen> {
+class _OrganiserScreenState extends State<OrganiserScreen> {
   bool loading = false;
   bool sLoading = false;
 
@@ -24,17 +24,17 @@ class _VeepScreenState extends State<VeepScreen> {
     });
 
     try {
-      final existingVotes = await CandidateService().fetchCandidateVotes('v_1');
+      final existingVotes = await CandidateService().fetchCandidateVotes('o_1');
 
-      final prez = SingleCandidateModel.fromFirestore(existingVotes.data());
-      ++prez.yesVotes;
+      final org = SingleCandidateModel.fromFirestore(existingVotes.data());
+      ++org.yesVotes;
 
       await CandidateService().countVoting(
-        'v_1',
-        prez.toFirestore(),
+        'o_1',
+        org.toFirestore(),
       );
 
-      Navigator.pushReplacementNamed(context, secretaryScreen);
+      Navigator.pushReplacementNamed(context, wocomScreen);
 
       Timer(
         const Duration(seconds: 1),
@@ -53,17 +53,17 @@ class _VeepScreenState extends State<VeepScreen> {
     });
 
     try {
-      final existingVotes = await CandidateService().fetchCandidateVotes('v_1');
+      final existingVotes = await CandidateService().fetchCandidateVotes('o_1');
 
-      final prez = SingleCandidateModel.fromFirestore(existingVotes.data());
-      ++prez.noVotes;
+      final org = SingleCandidateModel.fromFirestore(existingVotes.data());
+      ++org.noVotes;
 
       await CandidateService().countVoting(
-        'v_1',
-        prez.toFirestore(),
+        'o_1',
+        org.toFirestore(),
       );
 
-      Navigator.pushReplacementNamed(context, secretaryScreen);
+      Navigator.pushReplacementNamed(context, wocomScreen);
 
       Timer(
         const Duration(seconds: 1),
@@ -89,14 +89,14 @@ class _VeepScreenState extends State<VeepScreen> {
       reverseCurve: Curves.linear,
     );
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Center(
           child: Text(
-            'Vice Presidential Candidate',
+            'Organiser Candidate',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline4,
           ),
@@ -112,8 +112,8 @@ class _VeepScreenState extends State<VeepScreen> {
           children: [
             candidateWidget(
               context,
-              'Phyllis Marfoa Ayeh',
-              'images/veep.jpeg',
+              'Asare Richard Yeboah',
+              'images/org.jpeg',
               true,
             ),
             SizedBox(height: 20.h),
@@ -124,7 +124,7 @@ class _VeepScreenState extends State<VeepScreen> {
               child: TextButton(
                 onPressed: () => Navigator.pushReplacementNamed(
                   context,
-                  secretaryScreen,
+                  wocomScreen,
                 ),
                 child: const Text('Skip'),
               ),

@@ -7,7 +7,7 @@ class ThankyouScreen extends StatelessWidget {
   const ThankyouScreen({super.key});
 
   void onNavigateHome(context) {
-    Navigator.pushNamed(context, verificationScreen);
+    Navigator.pushReplacementNamed(context, verificationScreen);
   }
 
   @override

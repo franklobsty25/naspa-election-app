@@ -4,37 +4,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:sizer/sizer.dart';
 import 'package:suhum_naspa/constants/constant.dart';
-import 'package:suhum_naspa/models/single_candidate_model.dart';
+import 'package:suhum_naspa/models/double_candidate_model.dart';
 import 'package:suhum_naspa/services/candidate_service.dart';
 
-class VeepScreen extends StatefulWidget {
-  const VeepScreen({super.key});
+class SecretaryScreen extends StatefulWidget {
+  const SecretaryScreen({super.key});
 
   @override
-  State<VeepScreen> createState() => _VeepScreenState();
+  State<SecretaryScreen> createState() => _SecretaryScreenState();
 }
 
-class _VeepScreenState extends State<VeepScreen> {
+class _SecretaryScreenState extends State<SecretaryScreen> {
   bool loading = false;
   bool sLoading = false;
 
-  void onYesVoting(context) async {
+  void onCandidateOneVoting(context) async {
     setState(() {
       loading = true;
     });
 
     try {
-      final existingVotes = await CandidateService().fetchCandidateVotes('v_1');
+      final existingVotes = await CandidateService().fetchCandidateVotes('s_1');
 
-      final prez = SingleCandidateModel.fromFirestore(existingVotes.data());
-      ++prez.yesVotes;
+      final sec = DoubleCandidateModel.fromFirestore(existingVotes.data());
+      ++sec.votes;
 
       await CandidateService().countVoting(
-        'v_1',
-        prez.toFirestore(),
+        's_1',
+        sec.toFirestore(),
       );
 
-      Navigator.pushReplacementNamed(context, secretaryScreen);
+      Navigator.pushReplacementNamed(context, organiserScreen);
 
       Timer(
         const Duration(seconds: 1),
@@ -47,23 +47,23 @@ class _VeepScreenState extends State<VeepScreen> {
     }
   }
 
-  void onNoVoting(context) async {
+  void onCandidateTwoVoting(context) async {
     setState(() {
       sLoading = true;
     });
 
     try {
-      final existingVotes = await CandidateService().fetchCandidateVotes('v_1');
+      final existingVotes = await CandidateService().fetchCandidateVotes('s_2');
 
-      final prez = SingleCandidateModel.fromFirestore(existingVotes.data());
-      ++prez.noVotes;
+      final sec2 = DoubleCandidateModel.fromFirestore(existingVotes.data());
+      ++sec2.votes;
 
       await CandidateService().countVoting(
-        'v_1',
-        prez.toFirestore(),
+        's_2',
+        sec2.toFirestore(),
       );
 
-      Navigator.pushReplacementNamed(context, secretaryScreen);
+      Navigator.pushReplacementNamed(context, organiserScreen);
 
       Timer(
         const Duration(seconds: 1),
@@ -96,7 +96,7 @@ class _VeepScreenState extends State<VeepScreen> {
       appBar: AppBar(
         title: Center(
           child: Text(
-            'Vice Presidential Candidate',
+            'Secretarial Candidates',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline4,
           ),
@@ -104,27 +104,29 @@ class _VeepScreenState extends State<VeepScreen> {
       ),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 2.w,
-          vertical: 3.h,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 3.h),
         child: ListView(
           children: [
             candidateWidget(
               context,
-              'Phyllis Marfoa Ayeh',
-              'images/veep.jpeg',
+              'Joshua Kojo Agbehoho',
+              'images/sec.jpeg',
               true,
             ),
-            SizedBox(height: 20.h),
-            // candidateWidget(context, 'Henry Kondo', 'images/v_2.JPG', false),
-            // SizedBox(height: 5.h),
+            SizedBox(height: 5.h),
+            candidateWidget(
+              context,
+              'Joycelyn Asamoah',
+              'images/sec2.jpeg',
+              false,
+            ),
+            SizedBox(height: 5.h),
             Align(
               alignment: Alignment.bottomCenter,
               child: TextButton(
                 onPressed: () => Navigator.pushReplacementNamed(
                   context,
-                  secretaryScreen,
+                  organiserScreen,
                 ),
                 child: const Text('Skip'),
               ),
@@ -143,69 +145,59 @@ class _VeepScreenState extends State<VeepScreen> {
   ) {
     return Column(
       children: [
+        SizedBox(height: 1.h),
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: Card(
             elevation: 20,
             shadowColor: Colors.black45,
-            child: Image.asset(candidateImage),
+            child: Image.asset(candidateImage, height: 20.h),
           ),
         ),
-        SizedBox(height: 1.h),
+        SizedBox(height: 2.h),
         Align(
           alignment: Alignment.topCenter,
           child: Text(candidateName),
         ),
-        SizedBox(height: 5.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 30.w,
-              height: 5.h,
-              child: ElevatedButton(
-                onPressed: loading ? null : () => onYesVoting(context),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: loading
+        SizedBox(height: 2.h),
+        SizedBox(
+          width: 30.w,
+          height: 5.h,
+          child: ElevatedButton(
+            onPressed: active
+                ? loading
+                    ? null
+                    : () => onCandidateOneVoting(context)
+                : sLoading
+                    ? null
+                    : () => onCandidateTwoVoting(context),
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            child: active
+                ? loading
                     ? SizedBox(
                         width: 5.w,
                         height: 3.h,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2.0,
+                          strokeWidth: 2,
                           color: Theme.of(context).colorScheme.secondary,
                         ),
                       )
-                    : const Text('Yes'),
-              ),
-            ),
-            SizedBox(width: 2.w),
-            SizedBox(
-              width: 30.w,
-              height: 5.h,
-              child: ElevatedButton(
-                onPressed: sLoading ? null : () => onNoVoting(context),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: sLoading
+                    : const Text('Vote')
+                : sLoading
                     ? SizedBox(
                         width: 5.w,
                         height: 3.h,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2.0,
+                          strokeWidth: 2,
                           color: Theme.of(context).colorScheme.secondary,
                         ),
                       )
-                    : const Text('No'),
-              ),
-            ),
-          ],
+                    : const Text('Vote'),
+          ),
         ),
       ],
     );

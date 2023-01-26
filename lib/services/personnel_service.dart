@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PersonnelService {
   CollectionReference personnels =
-      FirebaseFirestore.instance.collection('personnels');
+      FirebaseFirestore.instance.collection('nsawam_personnels');
 
   Future getPersonnel(String nssNumber) async {
     try {

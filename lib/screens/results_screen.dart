@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:sizer/sizer.dart';
 import 'package:suhum_naspa/components/candidate_component.dart';
-import 'package:suhum_naspa/models/president_model.dart';
+import 'package:suhum_naspa/components/single_candidate_component.dart';
+import 'package:suhum_naspa/models/double_candidate_model.dart';
+import 'package:suhum_naspa/models/single_candidate_model.dart';
 import 'package:suhum_naspa/services/candidate_service.dart';
 
 class ResultsScreen extends StatefulWidget {
@@ -14,10 +16,13 @@ class ResultsScreen extends StatefulWidget {
 
 class _ResultsScreenState extends State<ResultsScreen> {
   bool loading = false;
-  late int prez1;
-  late int prez2;
-  late int veep1;
-  late int veep2;
+  late DoubleCandidateModel prez1Obj;
+  late DoubleCandidateModel prez2Obj;
+  late SingleCandidateModel veep;
+  late DoubleCandidateModel sec1;
+  late DoubleCandidateModel sec2;
+  late SingleCandidateModel org;
+  late SingleCandidateModel wocom;
 
   @override
   void initState() {
@@ -31,22 +36,34 @@ class _ResultsScreenState extends State<ResultsScreen> {
     });
     try {
       final prez1Votes = await CandidateService().fetchCandidateVotes('p_1');
-      final prezz1 = PresidentModel.fromFirestore(prez1Votes.data());
+      final prezz1 = DoubleCandidateModel.fromFirestore(prez1Votes.data());
 
       final prez2Votes = await CandidateService().fetchCandidateVotes('p_2');
-      final prezz2 = PresidentModel.fromFirestore(prez2Votes.data());
+      final prezz2 = DoubleCandidateModel.fromFirestore(prez2Votes.data());
 
-      final veep1Votes = await CandidateService().fetchCandidateVotes('v_1');
-      final veepz1 = PresidentModel.fromFirestore(veep1Votes.data());
+      final veepVotes = await CandidateService().fetchCandidateVotes('v_1');
+      final veepYNVotes = SingleCandidateModel.fromFirestore(veepVotes.data());
 
-      final veep2Votes = await CandidateService().fetchCandidateVotes('v_2');
-      final veepz2 = PresidentModel.fromFirestore(veep2Votes.data());
+      final sec1Votes = await CandidateService().fetchCandidateVotes('s_1');
+      final secz1 = DoubleCandidateModel.fromFirestore(sec1Votes.data());
+
+      final sec2Votes = await CandidateService().fetchCandidateVotes('s_2');
+      final secz2 = DoubleCandidateModel.fromFirestore(sec2Votes.data());
+
+      final orgVotes = await CandidateService().fetchCandidateVotes('o_1');
+      final orgYNVotes = SingleCandidateModel.fromFirestore(orgVotes.data());
+
+      final wocomVotes = await CandidateService().fetchCandidateVotes('w_1');
+      final wocomYNVotes = SingleCandidateModel.fromFirestore(wocomVotes.data());
 
       setState(() {
-        prez1 = prezz1.votes;
-        prez2 = prezz2.votes;
-        veep1 = veepz1.votes;
-        veep2 = veepz2.votes;
+        prez1Obj = prezz1;
+        prez2Obj = prezz2;
+        veep = veepYNVotes;
+        sec1 = secz1;
+        sec2 = secz2;
+        org = orgYNVotes;
+        wocom = wocomYNVotes;
         loading = false;
       });
     } catch (e) {
@@ -67,6 +84,15 @@ class _ResultsScreenState extends State<ResultsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Center(
+          child: Text(
+            'Newly Elected Naspa Executives',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headline4,
+          ),
+        ),
+      ),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: loading
           ? Center(
@@ -80,45 +106,61 @@ class _ResultsScreenState extends State<ResultsScreen> {
               ),
               child: ListView(
                 children: [
-                  Text(
-                    'Newly Elected Naspa Executives',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.subtitle2,
-                  ),
                   SizedBox(height: 2.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CandidateComponent(
-                        candidateName: 'Asare Kwame Danso',
-                        candidatePosition: 'Presidential Candidate',
-                        candidateImage: 'images/p_1.JPG',
-                        candidateTotalVote: prez1,
+                        candidateName: 'Farouk Domson',
+                        candidatePosition: 'Presidential',
+                        candidateImage: 'images/farouk.jpeg',
+                        candidateTotalVote: prez1Obj.votes,
                       ),
                       CandidateComponent(
-                        candidateName: 'Agudze Elia Mawuli',
-                        candidatePosition: 'Presidential Candidate',
-                        candidateImage: 'images/p_2.JPG',
-                        candidateTotalVote: prez2,
+                        candidateName: 'Okoampah John',
+                        candidatePosition: 'Presidential',
+                        candidateImage: 'images/john.jpeg',
+                        candidateTotalVote: prez2Obj.votes,
                       ),
                     ],
+                  ),
+                  SingleCandidateComponent(
+                    candidateName: 'Phyllis Marfoa Ayeh',
+                    candidatePosition: 'Vice Presidential',
+                    candidateImage: 'images/veep.jpeg',
+                    candidateYesVote: veep.yesVotes,
+                    candidateNoVote: veep.noVotes,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CandidateComponent(
-                        candidateName: 'Josiah Ofori',
-                        candidatePosition: 'Vice Presidential Candidate',
-                        candidateImage: 'images/v_1.JPG',
-                        candidateTotalVote: veep1,
+                        candidateName: 'Joshua Kojo Agbehoho',
+                        candidatePosition: 'Secretary',
+                        candidateImage: 'images/sec.jpeg',
+                        candidateTotalVote: sec1.votes,
                       ),
                       CandidateComponent(
-                        candidateName: 'Henry Kondo',
-                        candidatePosition: 'Vice Presidential Candidate',
-                        candidateImage: 'images/v_2.JPG',
-                        candidateTotalVote: veep2,
+                        candidateName: 'Joycelyn Asamoah',
+                        candidatePosition: 'Secretary',
+                        candidateImage: 'images/sec2.jpeg',
+                        candidateTotalVote: sec2.votes,
                       ),
                     ],
+                  ),
+                  SingleCandidateComponent(
+                    candidateName: 'Asare Richard Yeboah',
+                    candidatePosition: 'Organiser',
+                    candidateImage: 'images/org.jpeg',
+                    candidateYesVote: org.yesVotes,
+                    candidateNoVote: org.noVotes,
+                  ),
+                  SingleCandidateComponent(
+                    candidateName: 'Rhoda Godsway Doklah',
+                    candidatePosition: 'Women Commissioner',
+                    candidateImage: 'images/wocom.jpg',
+                    candidateYesVote: wocom.yesVotes,
+                    candidateNoVote: wocom.noVotes,
                   ),
                   SizedBox(height: 1.h),
                   TextButton(
